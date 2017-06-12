@@ -1,0 +1,16 @@
+.striked {
+  text-decoration: line-through;
+}
+
+.close {
+  float: none;
+}
+
+.query {
+  min-height: 100px;
+}
+
+.results {
+  height: 400px;
+  overflow-y: scroll;
+}

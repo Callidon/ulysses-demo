@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="Thomas Minier">
+    <title>Quatz demonstration website</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
+    <!-- Main theme -->
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+  <body>
+    <div class="container" id="demoApp">
+      <div class="row">
+        <h1>Quartz demonstration <a href="https://github.com/Callidon/quartz-tpf"><i class="fa fa-github fa-lg" aria-hidden="true"></i></a></h1>
+        <p>Parallel SPARQL query processing over replicated Triples Pattern Fragments</p>
+      </div>
+
+      <div class="row">
+
+        <!-- Controls -->
+        <div class="col-md-6">
+          <!-- Servers -->
+          <div class="row">
+            <h3>Servers</h3>
+            <form class="form">
+              <div class="form-group">
+                <input v-model="newServer" type="text" class="form-control" id="server-url" placeholder="http://fragments.dbpedia.org/2016-04/en">
+              </div>
+              <button v-on:click="addServer()" type="button" class="btn btn-primary">Add a server</button>
+            </form>
+          </div>
+
+          <!-- Servers list -->
+          <div class="row">
+            <h4>Registered servers</h4>
+            <ol>
+              <li v-for="(server, index) in servers">
+                <a v-bind:class="{ 'text-success': serverGreen(index), 'text-danger': serverRed(index), striked: serverRed(index) }" href="#">{{ server }}</a>
+                <button type="button" v-on:click="removeServer(server)" class="close">&times;</button>
+              </li>
+            </ol>
+          </div>
+
+          <div class="row">
+            <h3>Query</h3>
+            <form class="form">
+              <div class="form-group">
+                <textarea v-model="query" class="query form-control" id="sparql-query">{{ query }}</textarea>
+              </div>
+              <div class="form-group">
+                <h3>Execution mode</h3>
+                <select v-model="mode" class="form-control">
+                  <option value="tpf">Classic TPF</option>
+                  <option value="tpf+pen">Classic TPF with Peneloop</option>
+                  <option value="quartz">Quartz without Peneloop</option>
+                  <option value="quartz+pen">Quartz with Peneloop</option>
+                </select>
+              </div>
+              <button v-on:click="run()" v-bind:class="{ disabled: queryInProgress }" class="btn btn-success" type="button">Execute query</button>
+              <button v-on:click="stop()" v-bind:class="{ hidden: !queryInProgress }" class="btn btn-danger" type="button">Stop execution</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-md-6">
+          <h3>Results</h3>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <p>
+                <strong>Execution time:</strong> {{ time }}
+                <strong>Number of results:</strong> {{ results.length }} mappings
+              </p>
+              <div class="results table-responsive">
+                <table v-if="results.length > 0" class="table table-hover">
+                  <tr>
+                    <th v-for="key in vars">{{ key }}</th>
+                  </tr>
+                  <tr v-for="mappings in results">
+                    <td v-for="(value, key) in mappings">
+                      {{ value }}
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Load balancing plot -->
+    <div class="container">
+      <div class="row">
+        <h3>Load balancing</h3>
+        <canvas id="httpCalls"></canvas>
+        <br>
+      </div>
+    </div>
+
+    <div class="footer container text-center">
+      <div class="row">
+        <p>Copyright 2017 Thomas Minier</p>
+      </div>
+    </div>
+
+    <!-- JQuery + Bootstrap JS -->
+    <script src="node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <!-- Quartz client -->
+    <script src="node_modules/quartz-tpf/quartz-tpf.bundle.js" type="text/javascript"></script>
+
+    <!-- Vue.js -->
+    <script src="node_modules/vue/dist/vue.js" type="text/javascript"></script>
+
+    <!-- Chart.js -->
+    <script src="node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+
+    <!-- Website Vue.js application -->
+    <script src="js/barchart.js" type="text/javascript"></script>
+    <script src="js/app.js" type="text/javascript"></script>
+  </body>
+</html>

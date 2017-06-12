@@ -1,0 +1,32 @@
+{
+  "name": "quartz-demo",
+  "version": "1.0.0",
+  "description": " Demonstration website for the Quartz engine",
+  "main": "demo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Callidon/quartz-demo.git"
+  },
+  "keywords": [
+    "tpf",
+    "quartz",
+    "replication"
+  ],
+  "author": "Thomas Minier <tminier01@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Callidon/quartz-demo/issues"
+  },
+  "homepage": "https://github.com/Callidon/quartz-demo#readme",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "chart.js": "^2.6.0",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
+    "quartz-tpf": "^1.0.3",
+    "vue": "^2.3.4"
+  }
+}
