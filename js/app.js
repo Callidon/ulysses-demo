@@ -29,6 +29,10 @@ const quartzDemo = new Vue({
     presets: {
       servers: [
         {
+          text: '2 instances of DBpedia 2015-10',
+          id: 'dbpedia2015'
+        },
+        {
           text: '2 equivalent Amazon instances',
           id: '2eq'
         },
@@ -37,11 +41,23 @@ const quartzDemo = new Vue({
           id: '2neq'
         },
         {
-          text: '[DEBUG] localhost',
-          id: 'debug'
+          text: '[DEBUG] localhost 2',
+          id: 'debug2'
+        },
+        {
+          text: '[DEBUG] localhost 3',
+          id: 'debug3'
+        },
+        {
+          text: '[DEBUG] localhost 4',
+          id: 'debug4'
         }
       ],
       queries: [
+        {
+          text: 'Actors born in the U.S.A',
+          value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbpedia: <http://dbpedia.org/resource/> SELECT ?actor ?city WHERE { ?actor a dbo:Actor. ?actor dbo:birthPlace ?city. ?city dbo:country dbpedia:United_States. } LIMIT 3000'
+        },
         {
           text: 'Query 73',
           value: 'SELECT DISTINCT ?v0 ?v2 WHERE { ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> . ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }'
@@ -159,6 +175,10 @@ const quartzDemo = new Vue({
     loadServerPreset: function (id) {
       this.servers = [];
       switch (id) {
+        case 'dbpedia2015':
+          this.servers.push('http://fragments.dbpedia.org/2015-10/en');
+          this.servers.push('http://fragments.mementodepot.org/dbpedia_201510');
+          break;
         case '2eq':
           this.servers.push('http://52.39.116.115/watDiv_100');
           this.servers.push('http://52.33.245.25/watDiv_100');
@@ -167,9 +187,20 @@ const quartzDemo = new Vue({
           this.servers.push('http://52.39.116.115/watDiv_100');
           this.servers.push('http://35.177.243.45/watDiv_100');
           break;
-        case 'debug':
+        case 'debug2':
           this.servers.push('http://localhost:8000/watDiv_100');
           this.servers.push('http://localhost:8001/watDiv_100');
+          break;
+        case 'debug3':
+          this.servers.push('http://localhost:8000/watDiv_100');
+          this.servers.push('http://localhost:8001/watDiv_100');
+          this.servers.push('http://localhost:8002/watDiv_100');
+          break;
+        case 'debug4':
+          this.servers.push('http://localhost:8000/watDiv_100');
+          this.servers.push('http://localhost:8001/watDiv_100');
+          this.servers.push('http://localhost:8002/watDiv_100');
+          this.servers.push('http://localhost:8003/watDiv_100');
           break;
         default:
           break;

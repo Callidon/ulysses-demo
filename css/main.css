@@ -19,3 +19,8 @@
   width: 250px;
   display: inline;
 }
+
+.load-title {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+}

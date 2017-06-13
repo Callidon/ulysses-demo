@@ -25,12 +25,14 @@
         <div class="col-md-6">
           <!-- Servers -->
           <div class="row">
-            <h3>Servers</h3>
+            <h3><i class="fa fa-database" aria-hidden="true"></i> Servers</h3>
             <form class="form">
               <div class="form-group">
                 <input v-model="newServer" type="text" class="form-control" id="server-url" placeholder="http://fragments.dbpedia.org/2016-04/en">
               </div>
-              <button v-on:click="addServer()" type="button" class="btn btn-primary">Add a server</button>
+              <button v-on:click="addServer()" type="button" class="btn btn-primary">
+                <span class="glyphicon glyphicon-plus"></span> Add a server
+              </button>
               or select a preset
               <select class="form-control preset-select">
                 <option active v-on:click="loadServerPreset('none')">No preset</option>
@@ -52,7 +54,7 @@
           </div>
 
           <div class="row">
-            <h3>Query</h3>
+            <h3><span class="glyphicon glyphicon-search"></span> Query</h3>
             <form class="form">
               <div class="form-group">
                 <textarea v-model="query" class="query form-control" id="sparql-query">{{ query }}</textarea>
@@ -62,8 +64,13 @@
                 <option active v-on:click="loadQueryPreset('')">No preset</option>
                 <option v-for="preset in presets.queries" v-on:click="loadQueryPreset(preset.value)">{{ preset.text }}</option>
               </select>
+            </form>
+          </div>
+
+          <div class="row">
+            <h3><span class="glyphicon glyphicon-cog"></span> Execution mode</h3>
+            <form class="form">
               <div class="form-group">
-                <h3>Execution mode</h3>
                 <select v-model="mode" class="form-control">
                   <option value="quartz+pen">Quartz with Peneloop</option>
                   <option value="quartz">Quartz without Peneloop</option>
@@ -71,15 +78,20 @@
                   <option value="tpf+pen">Classic TPF with Peneloop</option>
                 </select>
               </div>
-              <button v-on:click="run()" v-bind:class="{ disabled: queryInProgress }" class="btn btn-success" type="button">Execute query</button>
-              <button v-on:click="stop()" v-bind:class="{ hidden: !queryInProgress }" class="btn btn-danger" type="button">Stop execution</button>
+              <button v-on:click="run()" v-bind:class="{ disabled: queryInProgress }" class="btn btn-success" type="button">
+                <span class="glyphicon glyphicon-ok"></span> Execute query
+              </button>
+              <button v-on:click="stop()" v-bind:class="{ hidden: !queryInProgress }" class="btn btn-danger" type="button">
+                <span class="glyphicon glyphicon-remove"></span> Stop execution
+              </button>
+              <i v-if="queryInProgress" class="fa fa-refresh fa-spin fa-1x fa-fw"></i>
             </form>
           </div>
         </div>
 
         <!-- Results -->
         <div class="col-md-6">
-          <h3>Results</h3>
+          <h3><span class="glyphicon glyphicon-list"></span> Results</h3>
           <div class="panel panel-default">
             <div class="panel-body">
               <p>
@@ -89,7 +101,7 @@
               <div class="results table-responsive">
                 <table v-if="results.length > 0" class="table table-hover">
                   <tr>
-                    <th v-for="key in vars">{{ key }}</th>
+                    <th v-for="key in vars" class="text-center">{{ key }}</th>
                   </tr>
                   <tr v-for="mappings in results">
                     <td v-for="(value, key) in mappings">
@@ -108,7 +120,8 @@
     <!-- Load balancing plot -->
     <div class="container">
       <div class="row">
-        <h3>Load balancing</h3>
+        <h3>
+          <span class="glyphicon glyphicon-import"></span> Load balancing</h3>
         <canvas id="httpCalls"></canvas>
         <br>
       </div>
