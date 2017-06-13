@@ -4,6 +4,13 @@
     "es6": true,
     "node": true
   },
+  "globals": {
+    "Vue": false,
+    "barChart": false,
+    "updateChartLabels": false,
+    "updateChartData": false,
+    "clearBarChart": false
+  },
   "extends": "eslint:recommended",
   "rules": {
     "linebreak-style": [

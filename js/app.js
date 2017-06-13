@@ -1,38 +1,56 @@
 'use strict';
 
-var QuartzClient = require('quartz-tpf');
+const QuartzClient = require('quartz-tpf');
 
-var eventBus = new Vue()
-var parser = document.createElement('a');
-var sparqlIterator;
+const eventBus = new Vue();
+const parser = document.createElement('a');
+let sparqlIterator;
 
 XMLHttpRequest.prototype.reallyOpen = XMLHttpRequest.prototype.open;
-XMLHttpRequest.prototype.open = function(method, url, flag) {
+XMLHttpRequest.prototype.open = function (method, url, flag) {
     parser.href = url;
     eventBus.$emit('proxy-url', parser.host);
     this.reallyOpen(method, url, flag);
 };
 
-
-var quartzDemo = new Vue({
+const quartzDemo = new Vue({
   el: '#demoApp',
   data: {
     message: 'Hello Vue!',
     newServer: '',
-    query: 'SELECT DISTINCT ?v0 ?v2 WHERE { ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> . ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }',
-    servers: [
-      'http://localhost:8000/watDiv_100',
-      'http://localhost:8001/watDiv_100'
-    ],
-    mode: 'tpf',
+    query: '',
+    servers: [],
+    mode: 'quartz+pen',
     vars: [],
     time: '???',
     results: [],
     calls: {},
-    queryInProgress: false
+    queryInProgress: false,
+    presets: {
+      servers: [
+        {
+          text: '2 equivalent Amazon instances',
+          id: '2eq'
+        },
+        {
+          text: '2 non equivalent Amazon instances',
+          id: '2neq'
+        },
+        {
+          text: '[DEBUG] localhost',
+          id: 'debug'
+        }
+      ],
+      queries: [
+        {
+          text: 'Query 73',
+          value: 'SELECT DISTINCT ?v0 ?v2 WHERE { ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> . ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }'
+        }
+      ]
+    }
   },
   created: function () {
-    var self = this;
+    const self = this;
     eventBus.$on('proxy-url', function (url) {
       if (self.calls[url] === undefined) {
         self.calls[url] = 1;
@@ -56,8 +74,8 @@ var quartzDemo = new Vue({
         this.newServer = '';
       }
     },
-    removeServer: function(id) {
-      var index = this.servers.indexOf(id);
+    removeServer: function (id) {
+      const index = this.servers.indexOf(id);
       if (index > -1) {
         this.servers.splice(index, 1);
       }
@@ -67,69 +85,98 @@ var quartzDemo = new Vue({
       this.queryInProgress = false;
     },
     run: function () {
-      // reset UI variables
-      this.time = 'in progress';
-      this.results = [];
-      this.calls = {};
-      this.queryInProgress = true;
-      clearBarChart(barChart);
+      if (this.servers.length > 0 && this.query !== '') {
+        const self = this;
+        // reset UI variables
+        this.time = 'in progress';
+        this.results = [];
+        this.calls = {};
+        this.queryInProgress = true;
+        clearBarChart(barChart);
 
-      var options = {};
-      // determine mode
-      switch (this.mode) {
-        case 'tpf':
-          options.locLimit = 0;
-          options.usePeneloop = false;
+        const options = {};
+        // determine mode
+        switch (this.mode) {
+          case 'tpf':
+            options.locLimit = 0;
+            options.usePeneloop = false;
+            break;
+          case 'tpf+pen':
+            options.locLimit = 0;
+            options.usePeneloop = true;
+            break;
+          case 'quartz':
+            options.locLimit = 1;
+            options.usePeneloop = false;
+            break;
+          case 'quartz+pen':
+            options.locLimit = 1;
+            options.usePeneloop = true;
+            break;
+          default:
+            break;
+        }
+
+        // setup a daemon to update the chart
+        const interval = setInterval(function () {
+          barChart.update();
+        }, 2000);
+
+        const client = new QuartzClient(this.servers[0]);
+        client.setOption('locLimit', options.locLimit);
+        client.setOption('usePeneloop', options.usePeneloop);
+        client.buildPlan(this.query, this.servers)
+        .then(function (plan) {
+          self.vars = plan.variables;
+          sparqlIterator = client.executePlan(plan, false);
+
+          sparqlIterator.on('error', function (error) {
+            console.error('ERROR: An error occurred during query execution.\n');
+            console.error(error.stack);
+          });
+
+          sparqlIterator.on('end', function () {
+            // cleanupo the daemon, redraw the plot and compute execution time
+            window.clearInterval(interval);
+            barChart.update();
+
+            const endTime = Date.now();
+            const time = endTime - startTime;
+            self.time = (time / 1000) + 's';
+            self.queryInProgress = false;
+          });
+
+          const startTime = Date.now();
+          sparqlIterator.on('data', function (mappings) {
+            self.results.push(mappings);
+          });
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+      }
+    },
+    loadServerPreset: function (id) {
+      this.servers = [];
+      switch (id) {
+        case '2eq':
+          this.servers.push('http://52.39.116.115/watDiv_100');
+          this.servers.push('http://52.33.245.25/watDiv_100');
           break;
-        case 'tpf+pen':
-          options.locLimit = 0;
-          options.usePeneloop = true;
+        case '2neq':
+          this.servers.push('http://52.39.116.115/watDiv_100');
+          this.servers.push('http://35.177.243.45/watDiv_100');
           break;
-        case 'quartz':
-          options.locLimit = 1;
-          options.usePeneloop = false;
-          break;
-        case 'quartz+pen':
-          options.locLimit = 1;
-          options.usePeneloop = true;
+        case 'debug':
+          this.servers.push('http://localhost:8000/watDiv_100');
+          this.servers.push('http://localhost:8001/watDiv_100');
           break;
         default:
           break;
       }
-
-      // setup a daemon to update the chart
-      var interval = setInterval(function() {
-        barChart.update();
-      }, 2000);
-
-      var client = new QuartzClient(this.servers[0]);
-      client.setOption('locLimit', options.locLimit);
-      client.setOption('usePeneloop', options.usePeneloop);
-      client.buildPlan(this.query, this.servers)
-      .then(plan => {
-        this.vars = plan.variables;
-        sparqlIterator = client.executePlan(plan, false);
-
-        sparqlIterator.on('error', error => {
-          console.error('ERROR: An error occurred during query execution.\n');
-          console.error(error.stack);
-        });
-
-        sparqlIterator.on('end', () => {
-          // cleanupo the daemon, redraw the plot and compute execution time
-          window.clearInterval(interval);
-          barChart.update();
-
-          var endTime = Date.now();
-          var time = endTime - startTime;
-          this.time = (time / 1000) + 's';
-          this.queryInProgress = false;
-        });
-
-        var startTime = Date.now();
-        sparqlIterator.on('data', mappings => this.results.push(mappings));
-      })
-      .catch(error => console.error(error));
+    },
+    loadQueryPreset: function (query) {
+      this.query = query;
     }
   }
-})
+});

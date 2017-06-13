@@ -31,12 +31,18 @@
                 <input v-model="newServer" type="text" class="form-control" id="server-url" placeholder="http://fragments.dbpedia.org/2016-04/en">
               </div>
               <button v-on:click="addServer()" type="button" class="btn btn-primary">Add a server</button>
+              or select a preset
+              <select class="form-control preset-select">
+                <option active v-on:click="loadServerPreset('none')">No preset</option>
+                <option v-for="preset in presets.servers" v-on:click="loadServerPreset(preset.id)">{{ preset.text }}</option>
+              </select>
             </form>
           </div>
 
           <!-- Servers list -->
           <div class="row">
             <h4>Registered servers</h4>
+            <p v-if="servers.length === 0">No servers registered yet</p>
             <ol>
               <li v-for="(server, index) in servers">
                 <a v-bind:class="{ 'text-success': serverGreen(index), 'text-danger': serverRed(index), striked: serverRed(index) }" href="#">{{ server }}</a>
@@ -51,13 +57,18 @@
               <div class="form-group">
                 <textarea v-model="query" class="query form-control" id="sparql-query">{{ query }}</textarea>
               </div>
+              Type your own query or select a preset
+              <select class="form-control preset-select">
+                <option active v-on:click="loadQueryPreset('')">No preset</option>
+                <option v-for="preset in presets.queries" v-on:click="loadQueryPreset(preset.value)">{{ preset.text }}</option>
+              </select>
               <div class="form-group">
                 <h3>Execution mode</h3>
                 <select v-model="mode" class="form-control">
+                  <option value="quartz+pen">Quartz with Peneloop</option>
+                  <option value="quartz">Quartz without Peneloop</option>
                   <option value="tpf">Classic TPF</option>
                   <option value="tpf+pen">Classic TPF with Peneloop</option>
-                  <option value="quartz">Quartz without Peneloop</option>
-                  <option value="quartz+pen">Quartz with Peneloop</option>
                 </select>
               </div>
               <button v-on:click="run()" v-bind:class="{ disabled: queryInProgress }" class="btn btn-success" type="button">Execute query</button>

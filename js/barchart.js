@@ -1,11 +1,11 @@
 'use strict';
-var ctx = document.getElementById("httpCalls");
+const ctx = document.getElementById("httpCalls");
 
-var barChart = new Chart(ctx, {
+const barChart = new Chart(ctx, {
   type: 'bar',
   data: {
     labels: [],
-    datasets: [{
+    datasets: [ {
       label: '',
       data: [],
       backgroundColor: [
@@ -25,18 +25,18 @@ var barChart = new Chart(ctx, {
         'rgba(255, 159, 64, 1)'
       ],
       borderWidth: 1
-    }]
+    } ]
   },
   options: {
     scales: {
-      xAxes: [{
+      xAxes: [ {
         scaleLabel: {
           display: true,
           labelString: 'TPF servers',
           fontSize: 15
         }
-      }],
-      yAxes: [{
+      } ],
+      yAxes: [ {
         scaleLabel: {
           display: true,
           labelString: 'Number of HTTP calls per server',
@@ -45,7 +45,7 @@ var barChart = new Chart(ctx, {
         ticks: {
           beginAtZero:true
         }
-      }]
+      } ]
     }
   }
 });
