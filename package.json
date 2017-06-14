@@ -28,7 +28,7 @@
     "express": "^4.15.3",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
-    "quartz-tpf": "^1.1.0",
+    "quartz-tpf": "^1.1.1",
     "vue": "^2.3.4"
   }
 }

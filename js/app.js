@@ -9,7 +9,14 @@ let sparqlIterator;
 XMLHttpRequest.prototype.reallyOpen = XMLHttpRequest.prototype.open;
 XMLHttpRequest.prototype.open = function (method, url, flag) {
     parser.href = url;
-    eventBus.$emit('proxy-url', parser.host);
+    // uniform amazon EC2 URLs
+    const index = parser.host.indexOf('ec2-');
+    if (index > -1) {
+      const newUrl = parser.host.substring(index + 4, parser.host.indexOf('.'));
+      eventBus.$emit('proxy-url', newUrl.replace(/-/gi, '.'));
+    } else {
+      eventBus.$emit('proxy-url', parser.host);
+    }
     this.reallyOpen(method, url, flag);
 };
 
