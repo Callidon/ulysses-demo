@@ -40,33 +40,41 @@ const quartzDemo = new Vue({
           id: 'dbpedia2015'
         },
         {
-          text: '2 equivalent Amazon instances',
+          text: '2 equivalent WatDiv Amazon instances',
           id: '2eq'
         },
         {
-          text: '2 non equivalent Amazon instances',
+          text: '2 non equivalent WatDiv Amazon instances',
           id: '2neq'
         },
         {
-          text: '[DEBUG] localhost 2',
-          id: 'debug2'
+          text: '3 equivalent WatDiv Amazon instances',
+          id: '3eq'
         },
         {
-          text: '[DEBUG] localhost 3',
-          id: 'debug3'
+          text: '4 equivalent WatDiv Amazon instances',
+          id: '4eq'
         },
-        {
-          text: '[DEBUG] localhost 4',
-          id: 'debug4'
-        }
+        // {
+        //   text: '[DEBUG] localhost 2',
+        //   id: 'debug2'
+        // },
+        // {
+        //   text: '[DEBUG] localhost 3',
+        //   id: 'debug3'
+        // },
+        // {
+        //   text: '[DEBUG] localhost 4',
+        //   id: 'debug4'
+        // }
       ],
       queries: [
         {
-          text: 'Actors born in the U.S.A',
+          text: 'Actors born in the U.S.A (DBpedia)',
           value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbpedia: <http://dbpedia.org/resource/> SELECT ?actor ?city WHERE { ?actor a dbo:Actor. ?actor dbo:birthPlace ?city. ?city dbo:country dbpedia:United_States. } LIMIT 3000'
         },
         {
-          text: 'Query 73',
+          text: 'Query 73 (WatDiv)',
           value: 'SELECT DISTINCT ?v0 ?v2 WHERE { ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> . ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }'
         }
       ]
@@ -189,6 +197,17 @@ const quartzDemo = new Vue({
         case '2eq':
           this.servers.push('http://52.39.116.115/watDiv_100');
           this.servers.push('http://52.33.245.25/watDiv_100');
+          break;
+        case '3eq':
+          this.servers.push('http://52.39.116.115/watDiv_100');
+          this.servers.push('http://52.33.245.25/watDiv_100');
+          this.servers.push('http://54.70.48.92/watDiv_100');
+          break;
+        case '4eq':
+          this.servers.push('http://52.39.116.115/watDiv_100');
+          this.servers.push('http://52.33.245.25/watDiv_100');
+          this.servers.push('http://54.70.48.92/watDiv_100');
+          this.servers.push('http://35.160.40.16/watDiv_100');
           break;
         case '2neq':
           this.servers.push('http://52.39.116.115/watDiv_100');
