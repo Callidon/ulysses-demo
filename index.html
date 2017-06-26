@@ -34,9 +34,9 @@
                 <span class="glyphicon glyphicon-plus"></span> Add a server
               </button>
               or select a preset
-              <select class="form-control preset-select">
-                <option active v-on:click="loadServerPreset('none')">No preset</option>
-                <option v-for="preset in presets.servers" v-on:click="loadServerPreset(preset.id)">{{ preset.text }}</option>
+              <select class="form-control preset-select" v-model="currentServersPreset">
+                <!-- <option active value='none'>No preset</option> -->
+                <option v-for="preset in presets.servers" v-bind:value="preset.id" >{{ preset.text }}</option>
               </select>
             </form>
           </div>
@@ -60,9 +60,9 @@
                 <textarea v-model="query" class="query form-control" id="sparql-query">{{ query }}</textarea>
               </div>
               Type your own query or select a preset
-              <select class="form-control preset-select">
-                <option active v-on:click="loadQueryPreset('')">No preset</option>
-                <option v-for="preset in presets.queries" v-on:click="loadQueryPreset(preset.value)">{{ preset.text }}</option>
+              <select class="form-control preset-select" v-model="currentQueryPreset">
+                <!-- <option active value='none'>No preset</option> -->
+                <option v-for="preset in presets.queries" v-bind:value="preset.value">{{ preset.text }}</option>
               </select>
             </form>
           </div>
@@ -141,7 +141,7 @@
     <script src="node_modules/quartz-tpf/quartz-tpf.bundle.js" type="text/javascript"></script>
 
     <!-- Vue.js -->
-    <script src="node_modules/vue/dist/vue.min.js" type="text/javascript"></script>
+    <script src="node_modules/vue/dist/vue.js" type="text/javascript"></script>
 
     <!-- Chart.js -->
     <script src="node_modules/chart.js/dist/Chart.bundle.min.js"></script>

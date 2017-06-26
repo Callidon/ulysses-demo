@@ -32,6 +32,8 @@ const quartzDemo = new Vue({
     time: '???',
     results: [],
     calls: {},
+    currentServersPreset: 'none',
+    currentQueryPreset: '',
     queryInProgress: false,
     presets: {
       servers: [
@@ -79,6 +81,10 @@ const quartzDemo = new Vue({
         }
       ]
     }
+  },
+  watch: {
+    currentServersPreset: 'loadServerPreset',
+    currentQueryPreset: 'loadQueryPreset'
   },
   created: function () {
     const self = this;
