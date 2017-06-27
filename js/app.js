@@ -36,50 +36,54 @@ const quartzDemo = new Vue({
     currentQueryPreset: '',
     queryInProgress: false,
     presets: {
-      servers: [
-        {
-          text: '2 instances of DBpedia 2015-10',
-          id: 'dbpedia2015'
-        },
-        {
-          text: '2 equivalent WatDiv Amazon instances',
-          id: '2eq'
-        },
-        {
-          text: '2 non equivalent WatDiv Amazon instances',
-          id: '2neq'
-        },
-        {
-          text: '3 equivalent WatDiv Amazon instances',
-          id: '3eq'
-        },
-        {
-          text: '4 equivalent WatDiv Amazon instances',
-          id: '4eq'
-        },
-        // {
-        //   text: '[DEBUG] localhost 2',
-        //   id: 'debug2'
-        // },
-        // {
-        //   text: '[DEBUG] localhost 3',
-        //   id: 'debug3'
-        // },
-        // {
-        //   text: '[DEBUG] localhost 4',
-        //   id: 'debug4'
-        // }
-      ],
-      queries: [
-        {
-          text: 'Actors born in the U.S.A (DBpedia)',
-          value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbpedia: <http://dbpedia.org/resource/> SELECT ?actor ?city WHERE { ?actor a dbo:Actor. ?actor dbo:birthPlace ?city. ?city dbo:country dbpedia:United_States. } LIMIT 3000'
-        },
-        {
-          text: 'Query 73 (WatDiv)',
-          value: 'SELECT DISTINCT ?v0 ?v2 WHERE { ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> . ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }'
-        }
-      ]
+      servers: {
+        dbpedia: [
+          {
+            text: '2 instances of DBpedia 2015-10',
+            id: 'dbpedia2015'
+          }
+        ],
+        watdiv: [
+          {
+            text: '1 WatDiv Amazon instances twice',
+            id: '1eq'
+          },
+          {
+            text: '2 equivalent WatDiv Amazon instances',
+            id: '2eq'
+          },
+          {
+            text: '2 non equivalent WatDiv Amazon instances',
+            id: '2neq'
+          },
+          {
+            text: '3 equivalent WatDiv Amazon instances',
+            id: '3eq'
+          },
+          {
+            text: '4 equivalent WatDiv Amazon instances',
+            id: '4eq'
+          }
+        ]
+      },
+      queries: {
+        dbpedia: [
+          {
+            text: 'Actors born in the U.S.A (DBpedia)',
+            value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbpedia: <http://dbpedia.org/resource/> SELECT ?actor ?city WHERE { ?actor a dbo:Actor. ?actor dbo:birthPlace ?city. ?city dbo:country dbpedia:United_States. } LIMIT 3000'
+          }
+        ],
+        watdiv: [
+          {
+            text: 'Query 23 (WatDiv)',
+            value: 'SELECT DISTINCT ?v0 ?v1 ?v2 ?v4 WHERE { ?v0 <http://ogp.me/ns#title> ?v1 . ?v0 <http://ogp.me/ns#title> ?v2 . ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://db.uwaterloo.ca/~galuc/wsdbm/ProductCategory6> . ?v0 <http://db.uwaterloo.ca/~galuc/wsdbm/hasGenre> ?v4 }'
+          },
+          {
+            text: 'Query 73 (WatDiv)',
+            value: 'SELECT DISTINCT ?v0 ?v2 WHERE { ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> . ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }'
+          }
+        ]
+      }
     }
   },
   watch: {
@@ -199,6 +203,10 @@ const quartzDemo = new Vue({
         case 'dbpedia2015':
           this.servers.push('http://fragments.dbpedia.org/2015-10/en');
           this.servers.push('http://fragments.mementodepot.org/dbpedia_201510');
+          break;
+        case '1eq':
+          this.servers.push('http://52.39.116.115/watDiv_100');
+          this.servers.push('http://52.39.116.115/watDiv_100');
           break;
         case '2eq':
           this.servers.push('http://52.39.116.115/watDiv_100');

@@ -36,7 +36,12 @@
               or select a preset
               <select class="form-control preset-select" v-model="currentServersPreset">
                 <!-- <option active value='none'>No preset</option> -->
-                <option v-for="preset in presets.servers" v-bind:value="preset.id" >{{ preset.text }}</option>
+                <optgroup label="DBpedia 2015-10 dataset">
+                  <option v-for="preset in presets.servers.dbpedia" v-bind:value="preset.id" >{{ preset.text }}</option>
+                </optgroup>
+                <optgroup label="WatDiv 100k dataset">
+                  <option v-for="preset in presets.servers.watdiv" v-bind:value="preset.id" >{{ preset.text }}</option>
+                </optgroup>
               </select>
             </form>
           </div>
@@ -62,7 +67,12 @@
               Type your own query or select a preset
               <select class="form-control preset-select" v-model="currentQueryPreset">
                 <!-- <option active value='none'>No preset</option> -->
-                <option v-for="preset in presets.queries" v-bind:value="preset.value">{{ preset.text }}</option>
+                <optgroup label="DBpedia 2015-10 dataset">
+                  <option v-for="preset in presets.queries.dbpedia" v-bind:value="preset.value">{{ preset.text }}</option>
+                </optgroup>
+                <optgroup label="WatDiv 100k dataset">
+                  <option v-for="preset in presets.queries.watdiv" v-bind:value="preset.value" >{{ preset.text }}</option>
+                </optgroup>
               </select>
             </form>
           </div>
@@ -72,10 +82,14 @@
             <form class="form">
               <div class="form-group">
                 <select v-model="mode" class="form-control">
-                  <option value="quartz+pen">Quartz with Peneloop</option>
-                  <option value="quartz">Quartz without Peneloop</option>
-                  <option value="tpf">Classic TPF</option>
-                  <option value="tpf+pen">Classic TPF with Peneloop</option>
+                  <optgroup label="Quartz approach">
+                    <option value="quartz+pen">Quartz with Peneloop</option>
+                    <option value="quartz">Quartz without Peneloop</option>
+                  </optgroup>
+                  <optgroup label="Classic TPF approach">
+                    <option value="tpf">Classic TPF</option>
+                    <option value="tpf+pen">Classic TPF with Peneloop</option>
+                  </optgroup>
                 </select>
               </div>
               <button v-on:click="run()" v-bind:class="{ disabled: queryInProgress }" class="btn btn-success" type="button">
