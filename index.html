@@ -52,7 +52,7 @@
             <p v-if="servers.length === 0">No servers registered yet</p>
             <ol>
               <li v-for="(server, index) in servers">
-                <a v-bind:class="{ 'text-success': serverGreen(index), 'text-danger': serverRed(index), striked: serverRed(index) }" href="#">{{ server }}</a>
+                <a v-bind:class="{ 'text-success': serverGreen(index), 'text-danger': serverRed(index), striked: serverRed(index) }" v-bind:href="server" target="_blank">{{ server }}</a>
                 <button type="button" v-on:click="removeServer(server)" class="close">&times;</button>
               </li>
             </ol>
@@ -129,13 +129,31 @@
         </div>
 
       </div>
+
+      <div class="row">
+        <h3><span class="glyphicon glyphicon-import"></span> Load balancing</h3>
+        <div v-if="model !== null">
+          <h4>Estimated load</h4>
+          <table class="table table-hover">
+            <tr>
+              <th>Server</th>
+              <th>Cost-model coefficient</th>
+              <th>Estimated load</th>
+            </tr>
+            <tr v-for="server in model">
+              <td><a v-bind:href="server.url">{{ server.url }}</a></td>
+              <td>{{ server.coefficient }}</td>
+              <td>{{ server.load }}%</td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Load balancing plot -->
     <div class="container">
       <div class="row">
-        <h3>
-          <span class="glyphicon glyphicon-import"></span> Load balancing</h3>
+        <h4>Real-time load</h4>
         <canvas id="httpCalls"></canvas>
         <br>
       </div>

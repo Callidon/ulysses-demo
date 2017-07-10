@@ -29,6 +29,7 @@ const quartzDemo = new Vue({
     servers: [],
     mode: 'quartz+pen',
     vars: [],
+    model: null,
     time: '???',
     results: [],
     calls: {},
@@ -44,6 +45,10 @@ const quartzDemo = new Vue({
           }
         ],
         watdiv: [
+          // {
+          //   text: '2 localhost WatDiv servers',
+          //   id: 'debug2'
+          // },
           {
             text: '1 WatDiv Amazon instances twice',
             id: '1eq'
@@ -129,6 +134,7 @@ const quartzDemo = new Vue({
       if (this.servers.length > 0 && this.query !== '') {
         const self = this;
         // reset UI variables
+        // this.model = null;
         this.time = 'in progress';
         this.results = [];
         this.calls = {};
@@ -169,6 +175,17 @@ const quartzDemo = new Vue({
         client.buildPlan(this.query, this.servers)
         .then(function (plan) {
           self.vars = plan.variables;
+          // get model to estimate the load before execution
+          const model = client._modelRepo.getCachedModel(plan.modelID);
+          self.model = self.servers.map(url => {
+            return {
+              url,
+              coefficient: model.getCoefficient(url),
+              load: (model.getCoefficient(url) / model._sumCoefs) * 100
+            };
+          });
+
+          // run query
           sparqlIterator = client.executePlan(plan, false);
 
           sparqlIterator.on('error', function (error) {
