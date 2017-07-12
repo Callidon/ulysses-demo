@@ -137,11 +137,17 @@
           <table class="table table-hover">
             <tr>
               <th>Server</th>
+              <th>Access time</th>
+              <th>Page size</th>
+              <th>Throughput</th>
               <th>Cost-model coefficient</th>
               <th>Estimated load</th>
             </tr>
             <tr v-for="server in model">
               <td><a v-bind:href="server.url">{{ server.url }}</a></td>
+              <td>{{ server.latency }}ms</td>
+              <td>{{ server.pageSize }} triples</td>
+              <td>{{ server.throughput }} triple/ms</td>
               <td>{{ server.coefficient }}</td>
               <td>{{ server.load }}%</td>
             </tr>

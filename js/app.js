@@ -134,7 +134,7 @@ const quartzDemo = new Vue({
       if (this.servers.length > 0 && this.query !== '') {
         const self = this;
         // reset UI variables
-        // this.model = null;
+        this.model = null;
         this.time = 'in progress';
         this.results = [];
         this.calls = {};
@@ -177,9 +177,12 @@ const quartzDemo = new Vue({
           self.vars = plan.variables;
           // get model to estimate the load before execution
           const model = client._modelRepo.getCachedModel(plan.modelID);
-          self.model = self.servers.map(url => {
+          self.model = self.servers.map(function (url) {
             return {
               url,
+              latency: model._times[url],
+              pageSize: model._triplesPerPage[url],
+              throughput: model._weights[url].toString().slice(0, 5),
               coefficient: model.getCoefficient(url),
               load: (model.getCoefficient(url) / model._sumCoefs) * 100
             };
