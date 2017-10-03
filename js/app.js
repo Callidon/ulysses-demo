@@ -225,26 +225,26 @@ const quartzDemo = new Vue({
           this.servers.push('http://fragments.mementodepot.org/dbpedia_201510');
           break;
         case '1eq':
-          this.servers.push('http://52.39.116.115/watDiv_100');
-          this.servers.push('http://52.39.116.115/watDiv_100');
+          this.servers.push('http://34.208.134.212/watDiv_100');
+          this.servers.push('http://34.208.134.212/watDiv_100');
           break;
         case '2eq':
-          this.servers.push('http://52.39.116.115/watDiv_100');
-          this.servers.push('http://52.33.245.25/watDiv_100');
+          this.servers.push('http://34.208.134.212/watDiv_100');
+          this.servers.push('http://52.10.10.208/watDiv_100');
           break;
         case '3eq':
-          this.servers.push('http://52.39.116.115/watDiv_100');
-          this.servers.push('http://52.33.245.25/watDiv_100');
+          this.servers.push('http://34.208.134.212/watDiv_100');
+          this.servers.push('http://52.10.10.208/watDiv_100');
           this.servers.push('http://54.70.48.92/watDiv_100');
           break;
         case '4eq':
-          this.servers.push('http://52.39.116.115/watDiv_100');
-          this.servers.push('http://52.33.245.25/watDiv_100');
+          this.servers.push('http://34.208.134.212/watDiv_100');
+          this.servers.push('http://52.10.10.208/watDiv_100');
           this.servers.push('http://54.70.48.92/watDiv_100');
           this.servers.push('http://35.160.40.16/watDiv_100');
           break;
         case '2neq':
-          this.servers.push('http://52.39.116.115/watDiv_100');
+          this.servers.push('http://34.208.134.212/watDiv_100');
           this.servers.push('http://35.177.243.45/watDiv_100');
           break;
         case 'debug2':
