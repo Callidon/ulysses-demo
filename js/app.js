@@ -1,24 +1,38 @@
-'use strict';
+'use strict'
 
-const QuartzClient = require('quartz-tpf');
+const QuartzClient = require('quartz-tpf')
+const UlyssesIterator = require('ulysses')
 
-const eventBus = new Vue();
-const parser = document.createElement('a');
-let sparqlIterator;
+const eventBus = new Vue()
+const parser = document.createElement('a')
+let sparqlIterator
 
-XMLHttpRequest.prototype.reallyOpen = XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.reallyOpen = XMLHttpRequest.prototype.open
 XMLHttpRequest.prototype.open = function (method, url, flag) {
-    parser.href = url;
-    // uniform amazon EC2 URLs
-    const index = parser.host.indexOf('ec2-');
-    if (index > -1) {
-      const newUrl = parser.host.substring(index + 4, parser.host.indexOf('.'));
-      eventBus.$emit('proxy-url', newUrl.replace(/-/gi, '.'));
-    } else {
-      eventBus.$emit('proxy-url', parser.host);
+  parser.href = url
+  // uniform amazon EC2 URLs
+  const index = parser.host.indexOf('ec2-')
+  if (index > -1) {
+    const newUrl = parser.host.substring(index + 4, parser.host.indexOf('.'))
+    eventBus.$emit('proxy-url', newUrl.replace(/-/gi, '.'))
+  } else {
+    eventBus.$emit('proxy-url', parser.host)
+  }
+  this.reallyOpen(method, url, flag)
+}
+
+function formatModel (model) {
+  return model._servers.map(function (url) {
+    return {
+      url,
+      latency: model._times[url],
+      pageSize: model._triplesPerPage[url],
+      throughput: model._weights[url].toString().slice(0, 5),
+      coefficient: model.getCoefficient(url),
+      load: (model.getCoefficient(url) / model._sumCoefs) * 100
     }
-    this.reallyOpen(method, url, flag);
-};
+  })
+}
 
 const quartzDemo = new Vue({
   el: '#demoApp',
@@ -27,7 +41,6 @@ const quartzDemo = new Vue({
     newServer: '',
     query: '',
     servers: [],
-    mode: 'quartz+pen',
     vars: [],
     model: null,
     time: '???',
@@ -45,10 +58,6 @@ const quartzDemo = new Vue({
           }
         ],
         watdiv: [
-          // {
-          //   text: '2 localhost WatDiv servers',
-          //   id: 'debug2'
-          // },
           {
             text: '1 WatDiv Amazon instances twice',
             id: '1eq'
@@ -56,10 +65,6 @@ const quartzDemo = new Vue({
           {
             text: '2 equivalent WatDiv Amazon instances',
             id: '2eq'
-          },
-          {
-            text: '2 non equivalent WatDiv Amazon instances',
-            id: '2neq'
           },
           {
             text: '3 equivalent WatDiv Amazon instances',
@@ -96,178 +101,126 @@ const quartzDemo = new Vue({
     currentQueryPreset: 'loadQueryPreset'
   },
   created: function () {
-    const self = this;
+    const self = this
     eventBus.$on('proxy-url', function (url) {
       if (self.calls[url] === undefined) {
-        self.calls[url] = 1;
-        updateChartLabels(barChart, Object.keys(self.calls));
+        self.calls[url] = 1
+        updateChartLabels(barChart, Object.keys(self.calls))
       } else {
-        self.calls[url]++;
+        self.calls[url]++
       }
-      updateChartData(barChart, Object.values(self.calls));
-    });
+      updateChartData(barChart, Object.values(self.calls))
+    })
   },
   methods: {
-    serverGreen: function (index) {
-      return this.mode.includes('quartz') || (this.mode.includes('tpf') && index === 0);
-    },
-    serverRed: function (index) {
-      return ! this.serverGreen(index);
-    },
     addServer: function () {
       if (this.newServer !== '') {
-        this.servers.push(this.newServer);
-        this.newServer = '';
+        this.servers.push(this.newServer)
+        this.newServer = ''
       }
     },
     removeServer: function (id) {
-      const index = this.servers.indexOf(id);
+      const index = this.servers.indexOf(id)
       if (index > -1) {
-        this.servers.splice(index, 1);
+        this.servers.splice(index, 1)
       }
     },
     stop: function () {
-      sparqlIterator.close();
-      this.queryInProgress = false;
+      sparqlIterator.close()
+      this.queryInProgress = false
     },
     run: function () {
       if (this.servers.length > 0 && this.query !== '') {
-        const self = this;
+        const self = this
         // reset UI variables
-        this.model = null;
-        this.time = 'in progress';
-        this.results = [];
-        this.calls = {};
-        this.queryInProgress = true;
-        clearBarChart(barChart);
+        this.model = null
+        this.time = 'in progress'
+        this.results = []
+        this.calls = {}
+        this.queryInProgress = true
+        clearBarChart(barChart)
 
-        const options = {};
-        // determine mode
-        switch (this.mode) {
-          case 'tpf':
-            options.locLimit = 0;
-            options.usePeneloop = false;
-            break;
-          case 'tpf+pen':
-            options.locLimit = 0;
-            options.usePeneloop = true;
-            break;
-          case 'quartz':
-            options.locLimit = 1;
-            options.usePeneloop = false;
-            break;
-          case 'quartz+pen':
-            options.locLimit = 1;
-            options.usePeneloop = true;
-            break;
-          default:
-            break;
-        }
+        const options = {}
 
         // setup a daemon to update the chart
         const interval = setInterval(function () {
-          barChart.update();
-        }, 2000);
+          barChart.update()
+        }, 2000)
 
-        const client = new QuartzClient(this.servers[0]);
-        client.setOption('locLimit', options.locLimit);
-        client.setOption('usePeneloop', options.usePeneloop);
+        const client = new QuartzClient(this.servers[0])
+        client.setOption('locLimit', options.locLimit)
+        client.setOption('usePeneloop', options.usePeneloop)
         client.buildPlan(this.query, this.servers)
         .then(function (plan) {
-          self.vars = plan.variables;
-          // get model to estimate the load before execution
-          const model = client._modelRepo.getCachedModel(plan.modelID);
-          self.model = self.servers.map(function (url) {
-            return {
-              url,
-              latency: model._times[url],
-              pageSize: model._triplesPerPage[url],
-              throughput: model._weights[url].toString().slice(0, 5),
-              coefficient: model.getCoefficient(url),
-              load: (model.getCoefficient(url) / model._sumCoefs) * 100
-            };
-          });
+          self.vars = plan.variables
 
           // run query
-          sparqlIterator = client.executePlan(plan, false);
+          // sparqlIterator = client.executePlan(plan, false);
+          sparqlIterator = UlyssesIterator(self.query, self.servers)
 
           sparqlIterator.on('error', function (error) {
-            console.error('ERROR: An error occurred during query execution.\n');
-            console.error(error.stack);
-          });
+            console.error('ERROR: An error occurred during query execution.\n')
+            console.error(error.stack)
+          })
 
           sparqlIterator.on('end', function () {
             // cleanupo the daemon, redraw the plot and compute execution time
-            window.clearInterval(interval);
-            barChart.update();
+            window.clearInterval(interval)
+            barChart.update()
 
-            const endTime = Date.now();
-            const time = endTime - startTime;
-            self.time = (time / 1000) + 's';
-            self.queryInProgress = false;
-          });
+            const endTime = Date.now()
+            const time = endTime - startTime
+            self.time = (time / 1000) + 's'
+            self.queryInProgress = false
+          })
 
-          const startTime = Date.now();
+          const startTime = Date.now()
           sparqlIterator.on('data', function (mappings) {
-            self.results.push(mappings);
-          });
+            if (self.model === null) {
+              self.model = formatModel(sparqlIterator.model)
+              sparqlIterator.model.on('updated_time', function () {
+                self.model = formatModel(sparqlIterator.model)
+              })
+            }
+            self.results.push(mappings)
+          })
         })
         .catch(function (error) {
-          console.error(error);
-        });
+          console.error(error)
+        })
       }
     },
     loadServerPreset: function (id) {
-      this.servers = [];
+      this.servers = []
       switch (id) {
         case 'dbpedia2015':
-          this.servers.push('http://fragments.dbpedia.org/2015-10/en');
-          this.servers.push('http://fragments.mementodepot.org/dbpedia_201510');
-          break;
+          this.servers.push('http://fragments.dbpedia.org/2015-10/en')
+          this.servers.push('http://fragments.mementodepot.org/dbpedia_201510')
+          break
         case '1eq':
-          this.servers.push('http://34.208.134.212/watDiv_100');
-          this.servers.push('http://34.208.134.212/watDiv_100');
-          break;
+          this.servers.push('http://34.212.44.110/watDiv_100')
+          break
         case '2eq':
-          this.servers.push('http://34.208.134.212/watDiv_100');
-          this.servers.push('http://52.10.10.208/watDiv_100');
-          break;
+          this.servers.push('http://34.212.44.110/watDiv_100')
+          this.servers.push('http://34.216.147.78/watDiv_100')
+          break
         case '3eq':
-          this.servers.push('http://34.208.134.212/watDiv_100');
-          this.servers.push('http://52.10.10.208/watDiv_100');
-          this.servers.push('http://54.70.48.92/watDiv_100');
-          break;
+          this.servers.push('http://34.212.44.110/watDiv_100')
+          this.servers.push('http://34.216.147.78/watDiv_100')
+          this.servers.push('http://35.167.12.122/watDiv_100')
+          break
         case '4eq':
-          this.servers.push('http://34.208.134.212/watDiv_100');
-          this.servers.push('http://52.10.10.208/watDiv_100');
-          this.servers.push('http://54.70.48.92/watDiv_100');
-          this.servers.push('http://35.160.40.16/watDiv_100');
-          break;
-        case '2neq':
-          this.servers.push('http://34.208.134.212/watDiv_100');
-          this.servers.push('http://35.177.243.45/watDiv_100');
-          break;
-        case 'debug2':
-          this.servers.push('http://localhost:8000/watDiv_100');
-          this.servers.push('http://localhost:8001/watDiv_100');
-          break;
-        case 'debug3':
-          this.servers.push('http://localhost:8000/watDiv_100');
-          this.servers.push('http://localhost:8001/watDiv_100');
-          this.servers.push('http://localhost:8002/watDiv_100');
-          break;
-        case 'debug4':
-          this.servers.push('http://localhost:8000/watDiv_100');
-          this.servers.push('http://localhost:8001/watDiv_100');
-          this.servers.push('http://localhost:8002/watDiv_100');
-          this.servers.push('http://localhost:8003/watDiv_100');
-          break;
+          this.servers.push('http://34.212.44.110/watDiv_100')
+          this.servers.push('http://34.216.147.78/watDiv_100')
+          this.servers.push('http://35.167.12.122/watDiv_100')
+          this.servers.push('http://35.160.176.165/watDiv_100')
+          break
         default:
-          break;
+          break
       }
     },
     loadQueryPreset: function (query) {
-      this.query = query;
+      this.query = query
     }
   }
-});
+})
