@@ -164,9 +164,11 @@ const quartzDemo = new Vue({
         const interval = setInterval(function () {
           const time = Math.trunc((Date.now() - startTime) / 1000)
           // update charts data (expect the load chart)
-          updateLineChart(self.factorsChart, self.model.map(m => m.coefficient), time)
-          updateLineChart(self.timesChart, self.model.map(m => m.latency), time)
-          updateLineChart(self.throughputChart, self.model.map(m => m.throughput), time)
+          if (self.model !== null) {
+            updateLineChart(self.factorsChart, self.model.map(m => m.coefficient), time)
+            updateLineChart(self.timesChart, self.model.map(m => m.latency), time)
+            updateLineChart(self.throughputChart, self.model.map(m => m.throughput), time)
+          }
           // redraw all charts
           self.httpCallsChart.update()
           self.factorsChart.update()
@@ -195,6 +197,8 @@ const quartzDemo = new Vue({
             window.clearInterval(interval)
             self.httpCallsChart.update()
             self.factorsChart.update()
+            self.timesChart.update()
+            self.throughputChart.update()
 
             const endTime = Date.now()
             const time = endTime - startTime
