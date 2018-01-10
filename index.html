@@ -106,15 +106,12 @@
                 <strong>Number of results:</strong> {{ results.length }} mappings
               </p>
               <div class="results">
-                <table class="table-responsive table-bordered table-sm" v-for="mappings in results">
+                <table class="table table-hover" v-for="mappings in results">
                   <tr v-for="(value, key) in mappings">
                     <td>
                       <strong>{{ key }}: </strong>
                     </td>
                     <td>{{ value }}</td>
-                  </tr>
-                  <tr>
-                    <td></td>
                   </tr>
                 </table>
               </div>
@@ -125,26 +122,30 @@
       </div>
 
       <div class="row">
-        <h3><span class="glyphicon glyphicon-import"></span> Load balancing</h3>
+        <h3><span class="glyphicon glyphicon-signal"></span> Real-time statistics</h3>
         <div v-if="model !== null">
           <h4>Estimated load</h4>
           <table class="table table-hover">
-            <tr>
-              <th>Server</th>
-              <th>Access time</th>
-              <th>Page size</th>
-              <th>Throughput</th>
-              <th>Server capability factor</th>
-              <th>Estimated load</th>
-            </tr>
-            <tr v-for="server in model">
-              <td><a v-bind:href="server.url">{{ server.url }}</a></td>
-              <td>{{ server.latency }}ms</td>
-              <td>{{ server.pageSize }} triples</td>
-              <td>{{ server.throughput }} triple/ms</td>
-              <td>{{ server.coefficient }}</td>
-              <td>{{ server.load }}%</td>
-            </tr>
+            <thead>
+              <tr>
+                <th>Server</th>
+                <th>Access time</th>
+                <th>Page size</th>
+                <th>Throughput</th>
+                <th>Server capability factor</th>
+                <th>Estimated load</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="server in model">
+                <td><a v-bind:href="server.url">{{ server.url }}</a></td>
+                <td>{{ server.latency }}ms</td>
+                <td>{{ server.pageSize }} triples</td>
+                <td>{{ server.throughput }} triple/ms</td>
+                <td>{{ server.coefficient }}</td>
+                <td>{{ server.load }}%</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -153,8 +154,25 @@
     <!-- Load balancing plot -->
     <div class="container">
       <div class="row">
-        <h4>Real-time load</h4>
-        <canvas id="httpCalls"></canvas>
+        <div class="col-md-6">
+          <h4>Real-time load</h4>
+          <canvas id="httpCalls"></canvas>
+        </div>
+        <div class="col-md-6">
+          <h4>Servers capability factors</h4>
+          <canvas id="capacityFactors"></canvas>
+        </div>
+        <br>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h4>Servers access times (ms)</h4>
+          <canvas id="accessTimes"></canvas>
+        </div>
+        <div class="col-md-6">
+          <h4>Server throughputs (triple/ms)</h4>
+          <canvas id="throughputs"></canvas>
+        </div>
         <br>
       </div>
     </div>

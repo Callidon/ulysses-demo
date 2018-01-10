@@ -24,7 +24,7 @@
   "homepage": "https://github.com/Callidon/quartz-demo#readme",
   "dependencies": {
     "bootstrap": "^3.3.7",
-    "chart.js": "^2.6.0",
+    "chart.js": "^2.7.1",
     "cors": "^2.8.3",
     "express": "^4.15.3",
     "font-awesome": "^4.7.0",

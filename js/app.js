@@ -29,7 +29,7 @@ function formatModel (model) {
       pageSize: model._triplesPerPage[url],
       throughput: model._weights[url].toString().slice(0, 5),
       coefficient: model.getCoefficient(url),
-      load: (model.getCoefficient(url) / model._sumCoefs) * 100
+      load: Math.trunc((model.getCoefficient(url) / model._sumCoefs) * 100)
     }
   })
 }
@@ -45,6 +45,7 @@ const quartzDemo = new Vue({
     model: null,
     time: '???',
     results: [],
+    barChart: null,
     calls: {},
     currentServersPreset: 'none',
     currentQueryPreset: '',
@@ -80,7 +81,19 @@ const quartzDemo = new Vue({
         dbpedia: [
           {
             text: 'Actors born in the U.S.A (DBpedia)',
-            value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbpedia: <http://dbpedia.org/resource/> SELECT ?actor ?city WHERE { ?actor a dbo:Actor. ?actor dbo:birthPlace ?city. ?city dbo:country dbpedia:United_States. } LIMIT 3000'
+            value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbpedia: <http://dbpedia.org/resource/> SELECT ?actor ?city WHERE { ?actor a dbo:Actor. ?actor dbo:birthPlace ?city. ?city dbo:country dbpedia:United_States. } LIMIT 300'
+          },
+          {
+            text: 'Softwares developed by French compagnies',
+            value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?software ?company WHERE { ?software dbo:developer ?company. ?company dbo:locationCountry ?country. ?country rdfs:label "France"@en. }'
+          },
+          {
+            text: 'Desserts made with plants',
+            value: 'PREFIX dbpedia-owl:<http://dbpedia.org/ontology/> SELECT ?dessert ?fruit WHERE { ?dessert dbpedia-owl:type <http://dbpedia.org/resource/Dessert>; dbpedia-owl:ingredient ?fruit. ?fruit dbpedia-owl:kingdom <http://dbpedia.org/resource/Plant>. }'
+          },
+          {
+            text: 'Directors of movies starring Brad Pitt',
+            value: 'PREFIX dbpedia-owl:<http://dbpedia.org/ontology/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?movie ?title ?name WHERE { ?movie dbpedia-owl:starring [ rdfs:label "Brad Pitt"@en ]; rdfs:label ?title; dbpedia-owl:director [ rdfs:label ?name ]. }'
           }
         ],
         watdiv: [
@@ -105,11 +118,11 @@ const quartzDemo = new Vue({
     eventBus.$on('proxy-url', function (url) {
       if (self.calls[url] === undefined) {
         self.calls[url] = 1
-        updateChartLabels(barChart, Object.keys(self.calls))
+        updateChartLabels(self.httpCallsChart, Object.keys(self.calls))
       } else {
         self.calls[url]++
       }
-      updateChartData(barChart, Object.values(self.calls))
+      updateChartData(self.httpCallsChart, Object.values(self.calls))
     })
   },
   methods: {
@@ -138,13 +151,27 @@ const quartzDemo = new Vue({
         this.results = []
         this.calls = {}
         this.queryInProgress = true
-        clearBarChart(barChart)
+        // build charts
+        const startTime = Date.now()
+        this.httpCallsChart = buildCallsChart('httpCalls', this.servers)
+        this.factorsChart = buildLineChart('capacityFactors', this.servers, 'Elapsed time (seconds)', 'Server capability factor')
+        this.timesChart = buildLineChart('accessTimes', this.servers, 'Elapsed time (seconds)', 'Server access time (ms)')
+        this.throughputChart = buildLineChart('throughputs', this.servers, 'Elapsed time (seconds)', 'Server throughput')
 
         const options = {}
 
         // setup a daemon to update the chart
         const interval = setInterval(function () {
-          barChart.update()
+          const time = Math.trunc((Date.now() - startTime) / 1000)
+          // update charts data (expect the load chart)
+          updateLineChart(self.factorsChart, self.model.map(m => m.coefficient), time)
+          updateLineChart(self.timesChart, self.model.map(m => m.latency), time)
+          updateLineChart(self.throughputChart, self.model.map(m => m.throughput), time)
+          // redraw all charts
+          self.httpCallsChart.update()
+          self.factorsChart.update()
+          self.timesChart.update()
+          self.throughputChart.update()
         }, 2000)
 
         const client = new QuartzClient(this.servers[0])
@@ -166,7 +193,8 @@ const quartzDemo = new Vue({
           sparqlIterator.on('end', function () {
             // cleanupo the daemon, redraw the plot and compute execution time
             window.clearInterval(interval)
-            barChart.update()
+            self.httpCallsChart.update()
+            self.factorsChart.update()
 
             const endTime = Date.now()
             const time = endTime - startTime
