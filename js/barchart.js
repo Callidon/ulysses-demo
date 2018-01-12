@@ -1,12 +1,12 @@
 'use strict'
 
 const colors = [
-  'rgba(255, 99, 132, 0.5)',
-  'rgba(54, 162, 235, 0.5)',
-  'rgba(255, 206, 86, 0.5)',
-  'rgba(75, 192, 192, 0.5)',
-  'rgba(153, 102, 255, 0.5)',
-  'rgba(255, 159, 64, 0.5)'
+  'rgba(255, 99, 132, 0.75)',
+  'rgba(54, 162, 235, 0.75)',
+  'rgba(255, 206, 86, 0.75)',
+  'rgba(75, 192, 192, 0.75)',
+  'rgba(153, 102, 255, 0.75)',
+  'rgba(255, 159, 64, 0.75)'
 ]
 
 function buildCallsChart (canvasId, servers) {
@@ -36,7 +36,7 @@ function buildCallsChart (canvasId, servers) {
           }
         } ],
         yAxes: [ {
-          scaleLabel: {
+          ticks: {
             display: true,
             labelString: 'Number of HTTP calls per server',
             fontSize: 15,
@@ -107,7 +107,7 @@ function buildLineChart (canvasId, servers, xLabel, yLabel) {
         yAxes: [{
           display: true,
           ticks: {
-            min: 0,
+            beginAtZero: true,
             display: true,
             labelString: yLabel,
             fontSize: 15
@@ -123,4 +123,11 @@ function updateLineChart (chart, values, time = 0) {
   values.forEach((value, index) => {
     chart.data.datasets[index].data.push(value)
   })
+}
+
+function clearChart (chart) {
+  if (chart) {
+    chart.data.labels = []
+    chart.data.datasets = []
+  }
 }

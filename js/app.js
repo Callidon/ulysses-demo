@@ -151,6 +151,11 @@ const quartzDemo = new Vue({
         this.results = []
         this.calls = {}
         this.queryInProgress = true
+        // clear old charts
+        clearChart(this.httpCallsChart)
+        clearChart(this.factorsChart)
+        clearChart(this.timesChart)
+        clearChart(this.throughputChart)
         // build charts
         const startTime = Date.now()
         this.httpCallsChart = buildCallsChart('httpCalls', this.servers)
