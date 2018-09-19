@@ -30,7 +30,8 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "quartz-tpf": "^1.1.1",
-    "vue": "^2.3.4"
+    "vue": "^2.3.4",
+    "yasgui-yasqe": "^2.11.22"
   },
   "devDependencies": {
     "standard": "^10.0.3"
@@ -38,6 +39,15 @@
   "standard": {
     "env": [
       "browser"
+    ],
+    "globals": [
+      "Vue",
+      "updateChartLabels",
+      "updateChartData",
+      "clearChart",
+      "buildCallsChart",
+      "buildLineChart",
+      "updateLineChart"
     ]
   },
   "engines": {

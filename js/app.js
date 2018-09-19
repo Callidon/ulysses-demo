@@ -81,29 +81,29 @@ const quartzDemo = new Vue({
         dbpedia: [
           {
             text: 'Actors born in the U.S.A (DBpedia)',
-            value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbpedia: <http://dbpedia.org/resource/> SELECT ?actor ?city WHERE { ?actor a dbo:Actor. ?actor dbo:birthPlace ?city. ?city dbo:country dbpedia:United_States. } LIMIT 300'
+            value: 'PREFIX dbo: <http://dbpedia.org/ontology/>\nPREFIX dbpedia: <http://dbpedia.org/resource/>\nSELECT ?actor ?city\nWHERE {\n ?actor a dbo:Actor.\n ?actor dbo:birthPlace ?city.\n ?city dbo:country dbpedia:United_States.\n}\nLIMIT 300'
           },
           {
             text: 'Softwares developed by French compagnies',
-            value: 'PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT DISTINCT ?software ?company WHERE { ?software dbo:developer ?company. ?company dbo:locationCountry ?country. ?country rdfs:label "France"@en. }'
+            value: 'PREFIX dbo: <http://dbpedia.org/ontology/>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT DISTINCT ?software ?company\nWHERE {\n ?software dbo:developer ?company.\n ?company dbo:locationCountry ?country.\n ?country rdfs:label "France"@en.\n}'
           },
           {
             text: 'Desserts made with plants',
-            value: 'PREFIX dbpedia-owl:<http://dbpedia.org/ontology/> SELECT ?dessert ?fruit WHERE { ?dessert dbpedia-owl:type <http://dbpedia.org/resource/Dessert>; dbpedia-owl:ingredient ?fruit. ?fruit dbpedia-owl:kingdom <http://dbpedia.org/resource/Plant>. }'
+            value: 'PREFIX dbpedia-owl:<http://dbpedia.org/ontology/>\nSELECT ?dessert ?fruit WHERE {\n ?dessert dbpedia-owl:type <http://dbpedia.org/resource/Dessert>.\n ?dessert dbpedia-owl:ingredient ?fruit.\n ?fruit dbpedia-owl:kingdom <http://dbpedia.org/resource/Plant>.\n}'
           },
           {
             text: 'Directors of movies starring Brad Pitt',
-            value: 'PREFIX dbpedia-owl:<http://dbpedia.org/ontology/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> SELECT ?movie ?title ?name WHERE { ?movie dbpedia-owl:starring [ rdfs:label "Brad Pitt"@en ]; rdfs:label ?title; dbpedia-owl:director [ rdfs:label ?name ]. }'
+            value: 'PREFIX dbpedia-owl:<http://dbpedia.org/ontology/>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nSELECT ?movie ?title ?name\nWHERE {\n ?movie dbpedia-owl:starring [ rdfs:label "Brad Pitt"@en ].\n ?movie rdfs:label ?title.\n ?movie dbpedia-owl:director [ rdfs:label ?name ].\n}'
           }
         ],
         watdiv: [
           {
             text: 'Short query (Query 73 - WatDiv)',
-            value: 'SELECT DISTINCT ?v0 ?v2 WHERE { ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> . ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }'
+            value: 'SELECT DISTINCT ?v0 ?v2\nWHERE {\n ?v0 <http://ogp.me/ns#tag> <http://db.uwaterloo.ca/~galuc/wsdbm/Topic83> .\n ?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v0 }'
           },
           {
             text: 'Heavy query (Query 23 - WatDiv)',
-            value: 'SELECT DISTINCT ?v0 ?v1 ?v2 ?v4 WHERE { ?v0 <http://ogp.me/ns#title> ?v1 . ?v0 <http://ogp.me/ns#title> ?v2 . ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://db.uwaterloo.ca/~galuc/wsdbm/ProductCategory6> . ?v0 <http://db.uwaterloo.ca/~galuc/wsdbm/hasGenre> ?v4 }'
+            value: 'SELECT DISTINCT ?v0 ?v1 ?v2 ?v4\nWHERE {\n ?v0 <http://ogp.me/ns#title> ?v1 .\n ?v0 <http://ogp.me/ns#title> ?v2 .\n ?v0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://db.uwaterloo.ca/~galuc/wsdbm/ProductCategory6> .\n ?v0 <http://db.uwaterloo.ca/~galuc/wsdbm/hasGenre> ?v4\n}'
           }
         ]
       }
@@ -258,6 +258,8 @@ const quartzDemo = new Vue({
     },
     loadQueryPreset: function (query) {
       this.query = query
+      this.yasqe.setValue(query)
+      this.yasqe.refresh()
     }
   }
 })

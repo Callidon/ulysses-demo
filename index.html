@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="node_modules/yasgui-yasqe/dist/yasqe.min.css">
     <!-- Main theme -->
     <link rel="stylesheet" href="css/main.css">
   </head>
@@ -69,7 +70,8 @@
             <h3><span class="glyphicon glyphicon-search"></span> Query</h3>
             <form class="form">
               <div class="form-group">
-                <textarea v-model="query" class="query form-control" id="sparql-query">{{ query }}</textarea>
+                <textarea v-model="query" id='yasqe-editor'></textarea>
+                <!--  id="sparql-query" -->
               </div>
               Type your own query or select a preset
               <select class="form-control preset-select" v-model="currentQueryPreset">
@@ -185,6 +187,7 @@
     </div>
 
     <script src="js/ulysses.bundle.js" type="text/javascript"></script>
+    <script src="node_modules/yasgui-yasqe/dist/yasqe.bundled.min.js" charset="utf-8"></script>
     <!-- JQuery + Bootstrap JS -->
     <script src="node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
@@ -201,5 +204,13 @@
     <!-- Website Vue.js application -->
     <script src="js/barchart.js" type="text/javascript"></script>
     <script src="js/app.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+      quartzDemo.yasqe = YASQE.fromTextArea(document.getElementById('yasqe-editor'))
+      quartzDemo.yasqe.setValue('SELECT *\nWHERE {\n ?s ?p ?o\n}\nLIMIT 100')
+      quartzDemo.yasqe.on('change', function (args) {
+        quartzDemo.query = args.getQueryWithValues()
+      })
+    </script>
   </body>
 </html>
