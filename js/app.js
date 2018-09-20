@@ -70,10 +70,6 @@ const quartzDemo = new Vue({
           {
             text: '3 equivalent WatDiv Amazon instances',
             id: '3eq'
-          },
-          {
-            text: '4 equivalent WatDiv Amazon instances',
-            id: '4eq'
           }
         ]
       },
@@ -235,19 +231,13 @@ const quartzDemo = new Vue({
           this.servers.push('http://fragments.mementodepot.org/dbpedia_201510')
           break
         case '1eq':
-          this.servers.push('http://34.212.44.110/watDiv_100')
-          break
-        case '2eq':
-          this.servers.push('http://34.212.44.110/watDiv_100')
           this.servers.push('http://34.216.147.78/watDiv_100')
           break
-        case '3eq':
-          this.servers.push('http://34.212.44.110/watDiv_100')
+        case '2eq':
           this.servers.push('http://34.216.147.78/watDiv_100')
           this.servers.push('http://35.167.12.122/watDiv_100')
           break
-        case '4eq':
-          this.servers.push('http://34.212.44.110/watDiv_100')
+        case '3eq':
           this.servers.push('http://34.216.147.78/watDiv_100')
           this.servers.push('http://35.167.12.122/watDiv_100')
           this.servers.push('http://35.160.176.165/watDiv_100')
